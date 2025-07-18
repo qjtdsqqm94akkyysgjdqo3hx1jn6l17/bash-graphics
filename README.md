@@ -28,3 +28,26 @@ wait_then_exit_canvas
 ```
 
 or see [`test.bash`](./test.bash)
+
+## Which?
+
+See for yourself
+
+```shell
+$ time bash test.bash
+
+real	0m0.295s
+user	0m0.171s
+sys	0m0.145s
+
+# Same everything, just with `./graphics-1ppc.bash` instead
+$ time bash test.bash
+
+real	0m0.017s
+user	0m0.011s
+sys	0m0.006s
+```
+
+## TODO
+* [ ] organizations
+* [ ] optimization
