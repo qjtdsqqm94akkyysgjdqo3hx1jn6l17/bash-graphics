@@ -1,5 +1,21 @@
 #!/bin/bash
-# DRAW_CHAR is always ` ` here (since some terminals with line height>1 don't compensate for block chars properly)
+
+# Toy graphics library written 100% in bash, but with half the resolution of the other one
+# Copyright (C) 2025  qjtdsqqm94akkyysgjdqo3hx1jn6l17
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 
 # from  pxltrm
 get_term_size() {
@@ -13,22 +29,14 @@ error(){
     exit 1
 }
 
-coordinate_valid(){
-    if [ "$x" -gt ${CANVAS_WIDTH:?} ] ||\
-        [ "$y" -gt ${CANVAS_HEIGHT:?} ] ||\
-        [ "$x" -lt 1 ] ||\
-        [ "$y" -lt 1 ]
+# coordinate_invalid <x> <y>
+coordinate_invalid(){
+    if ((1<=$1 && $1<=CANVAS_WIDTH && 1<=$2 && $2<=CANVAS_HEIGHT))
     then
         return 1
     else
         return 0
     fi
-}
-
-xy_to_index(){
-    local x="${1:?}"
-    local y="${2:?}"
-    echo $((CANVAS_WIDTH*(y-1)+(x-1)))
 }
 
 # init_canvas <width> <height> [<color_index>]
@@ -64,7 +72,7 @@ draw_pixel(){
     local y="${2:?}"
     local color_index="${3:?}"
 
-    if ! coordinate_valid "$x" "$y"
+    if coordinate_invalid "$x" "$y"
     then
         error "Pixel out of bound"
     fi
@@ -73,16 +81,6 @@ draw_pixel(){
         "$y" "$x" \
         "${color_index}"
 }
-
-# init_canvas_row_col <row> <col> [<color>]
-# init_canvas_row_col(){
-#     # process stuff
-#     declare -rg CANVAS_ROW="$1", CANVAS_COL="$2"
-#     get_term_size()
-#     if [ "$CANVAS_WIDTH" -gt "$COLUMNS" ] || [ "$CANVAS_HEIGHT" -gt "$LINES" ]
-#     # tput smcup
-#     printf '\033[?1049h'
-# }
 
 wait_then_exit_canvas(){
     printf '\033[%b;0H\033[0J' "$((CANVAS_HEIGHT + 1))"
