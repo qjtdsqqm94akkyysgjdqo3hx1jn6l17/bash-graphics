@@ -1,5 +1,9 @@
 # Bash-full graphics
-![Demonstration](./demo.mp4)
+
+
+https://github.com/user-attachments/assets/1d763a7f-5794-4d7a-a8d7-4b069376cebc
+
+
 
 Toy text mode graphic library written in pure bash.
 
