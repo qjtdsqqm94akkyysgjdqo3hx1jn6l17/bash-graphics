@@ -53,9 +53,11 @@ init_canvas(){
     if [ "$CANVAS_WIDTH" -gt "$COLUMNS" ] \
         || [ "$CANVAS_HEIGHT" -gt "$((LINES*2))" ]
     then
-        error "Canvas size ${CANVAS_WIDTH}px x ${CANVAS_HEIGHT}px"\
-            "(${CANVAS_WIDTH} columns & $(((CANVAS_HEIGHT / 2) + (CANVAS_HEIGHT % 2))) lines)"\
-            "is too big (terminal window currently has ${COLUMNS} columns and ${LINES} lines.)"
+        echo "Canvas size ${CANVAS_WIDTH}px x ${CANVAS_HEIGHT}px" \
+            "(${CANVAS_WIDTH} columns & $(((CANVAS_HEIGHT / 2) + (CANVAS_HEIGHT % 2))) lines)" \
+            "is too big (terminal window currently has ${COLUMNS} columns and ${LINES} lines.)" \
+            >&2
+        exit 1
     fi
 
     # enter alternative screen buffer, move cursor to 0,0 and hide it
@@ -118,7 +120,7 @@ draw_pixel(){
 
 
 wait_then_exit_canvas(){
-    printf '\033[%b;0H\033[0J' "$((CANVAS_HEIGHT/2 + 2))"
+    printf '\033[%b;0H\033[2K' "$((CANVAS_HEIGHT/2 + 2))"
     echo "canvas will close once you press [Enter]" >&2
     read
     close_canvas
