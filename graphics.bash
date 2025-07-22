@@ -16,12 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# from  pxltrm
-get_term_size() {
-    shopt -s checkwinsize; (:;:)
-    [[ -z "${LINES:+$COLUMNS}" ]] && read -r LINES COLUMNS < <(stty size)
-}
-
 error(){
     echo "$@" >&2
     wait_then_exit_canvas
@@ -47,20 +41,21 @@ init_canvas(){
         CANVAS_HEIGHT="${2:?Must provide a height}" \
         DRAW_CHAR='▀' \
         DEFAULT_COLOR="${3:-0}"
-
     # We'll just use the Buffer to store any color the canvas is updated with
     # and fall back to DEFAULT_COLOR if no color was specified in a given index
     # AKA no need to initialized BUFFER with default values
     declare -ga CANVAS_BUFFER
 
-    get_term_size()
+    # get terminal size, code from  pxltrm
+    shopt -s checkwinsize; (:;:)
+    [[ -z "${LINES:+$COLUMNS}" ]] && read -r LINES COLUMNS < <(stty size)
 
     if [ "$CANVAS_WIDTH" -gt "$COLUMNS" ] \
         || [ "$CANVAS_HEIGHT" -gt "$((LINES*2))" ]
     then
-        error "Canvas size ${CANVAS_WIDTH}px x${CANVAS_HEIGHT}px"\
-            "(${CANVAS_WIDTH} columns & $(((CANVAS_HEIGHT / 2) + (CANVAS_HEIGHT % 2))) rows)"\
-            " can't fit in terminal of size ${LINES}x${COLUMNS}"
+        error "Canvas size ${CANVAS_WIDTH}px x ${CANVAS_HEIGHT}px"\
+            "(${CANVAS_WIDTH} columns & $(((CANVAS_HEIGHT / 2) + (CANVAS_HEIGHT % 2))) lines)"\
+            "is too big (terminal window currently has ${COLUMNS} columns and ${LINES} lines.)"
     fi
 
     # enter alternative screen buffer, move cursor to 0,0 and hide it
@@ -130,8 +125,8 @@ wait_then_exit_canvas(){
 }
 
 close_canvas(){
+    # unset CANVAS_WIDTH CANVAS_HEIGHT DRAW_CHAR DEFAULT_COLOR
     # tput rmcup
-    unset CANVAS_WIDTH CANVAS_HEIGHT
     printf '\033[?1049l\033[?25h'
 }
 
