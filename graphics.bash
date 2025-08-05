@@ -85,7 +85,12 @@ draw_pixel(){
     # why does doing this inline instead of via xy_to_index() net
     # a 200% in performance???
     local pixel_index="$((y+x*CANVAS_HEIGHT))"
-    CANVAS_BUFFER[$pixel_index]="$color_index"
+
+    if [[ "$color_index" -ne "$DEFAULT_COLOR" ]]; then
+        CANVAS_BUFFER[$pixel_index]="$color_index"
+    else
+        [[ -n "${CANVAS_BUFFER[$pixel_index]}" ]] && unset CANVAS_BUFFER[$pixel_index]
+    fi
 
     # we kinda need to shift y by 1, since
     # y=1 => line number 1/2 = 0 (no! should be 1)
